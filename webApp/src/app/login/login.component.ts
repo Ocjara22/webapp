@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../login.service';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ResponseLogin } from '../models/responselogin';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-
+  res: ResponseLogin;
   constructor(
     private serviceLogin: LoginService,
     private router: Router,
@@ -28,19 +29,17 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    //console.log(this.loginForm);
+
     let user: string = this.loginForm.value.name;
     let pass: string = this.loginForm.value.password;
 
-    this.serviceLogin.login(user, pass).then(
+    this.serviceLogin.login(user, pass).subscribe(
       response => {
-        sessionStorage.setItem("token", response.sessionTokenBck);
-        //console.log(response.sessionTokenBck);
+        this.res = response
+        sessionStorage.setItem("token", this.res.sessionTokenBck);
         this.router.navigate(['grid']);
       }
-    ).catch(err => {
-      console.log("Hubo un problema para conectarse al servicio de login");
-    });
+    );
   }
 
 }
